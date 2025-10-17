@@ -1,0 +1,242 @@
+# ==============================================
+# Dewamotor - Nuxt.js Project .gitignore
+# ==============================================
+
+# Node.js Dependencies
+# ==============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Package Manager Lock Files
+# ==============================================
+package-lock.json
+yarn.lock
+# Keep bun.lockb for Bun package manager
+# bun.lockb
+
+# Nuxt.js Build & Generated Files
+# ==============================================
+.nuxt/
+.output/
+.nitro/
+dist/
+.vercel/
+.netlify/
+
+# Environment Variables
+# ==============================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# Build & Cache Directories
+# ==============================================
+build/
+coverage/
+.nyc_output/
+.cache/
+.temp/
+.tmp/
+.parcel-cache/
+
+# IDE & Editor Files
+# ==============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# OS Generated Files
+# ==============================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+
+# Windows
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# Logs
+# ==============================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Runtime Data
+# ==============================================
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage Directory Used by Tools like Istanbul
+# ==============================================
+lib-cov/
+coverage/
+*.lcov
+.nyc_output/
+
+# Grunt Intermediate Storage
+# ==============================================
+.grunt/
+
+# Bower Dependency Directory
+# ==============================================
+bower_components/
+
+# Node-waf Configuration
+# ==============================================
+.lock-wscript
+
+# Compiled Binary Addons
+# ==============================================
+build/Release
+
+# Dependency Directories
+# ==============================================
+jspm_packages/
+
+# TypeScript Cache
+# ==============================================
+*.tsbuildinfo
+
+# Optional npm Cache Directory
+# ==============================================
+.npm
+
+# Optional ESLint Cache
+# ==============================================
+.eslintcache
+
+# Optional Stylelint Cache
+# ==============================================
+.stylelintcache
+
+# Microbundle Cache
+# ==============================================
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL History
+# ==============================================
+.node_repl_history
+
+# Output of 'npm pack'
+# ==============================================
+*.tgz
+
+# Yarn Integrity File
+# ==============================================
+.yarn-integrity
+
+# Parcel-bundler Cache
+# ==============================================
+.parcel-cache/
+
+# Next.js Build Output
+# ==============================================
+.next/
+out/
+
+# Gatsby Files
+# ==============================================
+.cache/
+public
+
+# Storybook Build Outputs
+# ==============================================
+.out
+.storybook-out
+
+# Temporary Folders
+# ==============================================
+tmp/
+temp/
+
+# Editor Directories and Files
+# ==============================================
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local Development
+# ==============================================
+.local
+.history/
+
+# Firebase
+# ==============================================
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+
+# Sentry Config File
+# ==============================================
+.sentryclirc
+
+# Serverless Framework
+# ==============================================
+.serverless/
+
+# FuseBox Cache
+# ==============================================
+.fusebox/
+
+# DynamoDB Local Files
+# ==============================================
+.dynamodb/
+
+# TernJS Port File
+# ==============================================
+.tern-port
+
+# Stores VSCode Versions Used for Testing VSCode Extensions
+# ==============================================
+.vscode-test
+
+# Yarn v2
+# ==============================================
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
