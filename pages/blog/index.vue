@@ -8,233 +8,51 @@
     </Head>
 
     <!-- Hero Section -->
-    <section class="bg-gradient-to-r from-slate-800 to-slate-900 text-white py-16">
-      <div class="container mx-auto px-4">
-        <div class="max-w-4xl mx-auto text-center">
-          <h1 class="text-4xl md:text-5xl font-bold mb-6">Automotive Blog</h1>
-          <p class="text-xl mb-8 text-gray-300">
-            Expert insights, maintenance tips, and industry news to keep you informed about your vehicle.
-          </p>
-        </div>
-      </div>
-    </section>
+    <BlogHeroSection />
 
     <!-- Search & Filter Section -->
-    <section class="py-8 bg-gray-50">
-      <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-          <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-            <!-- Search -->
-            <div class="relative flex-1 max-w-md">
-              <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <input 
-                v-model="searchQuery"
-                type="text" 
-                placeholder="Search articles..."
-                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-              />
-            </div>
-
-            <!-- Category Filter -->
-            <div class="flex flex-wrap gap-2">
-              <button 
-                v-for="category in categories" 
-                :key="category.id"
-                @click="selectedCategory = category.id"
-                :class="[
-                  'px-4 py-2 rounded-lg font-medium transition-colors',
-                  selectedCategory === category.id 
-                    ? 'bg-red-600 text-white' 
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
-                ]"
-              >
-                {{ category.name }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <BlogSearchFilterSection
+      v-model:search-query="searchQuery"
+      :selected-category="selectedCategory"
+      :categories="categories"
+      @category-change="handleCategoryChange"
+    />
 
     <!-- Featured Article -->
-    <section class="py-16" v-if="featuredArticle">
-      <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-          <h2 class="text-2xl font-bold mb-8">Featured Article</h2>
-          
-          <div class="bg-white rounded-lg shadow-xl overflow-hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-2">
-              <div class="relative">
-                <NuxtImg 
-                  :src="featuredArticle.image" 
-                  :alt="featuredArticle.title"
-                  class="w-full h-64 lg:h-full object-cover"
-                />
-                <div class="absolute top-4 left-4">
-                  <span class="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    Featured
-                  </span>
-                </div>
-              </div>
-              
-              <div class="p-8">
-                <div class="flex items-center space-x-4 mb-4">
-                  <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-medium">
-                    {{ getCategoryName(featuredArticle.category) }}
-                  </span>
-                  <span class="text-gray-500 text-sm">{{ formatDate(featuredArticle.publishedAt) }}</span>
-                </div>
-                
-                <h3 class="text-2xl font-bold mb-4">{{ featuredArticle.title }}</h3>
-                <p class="text-gray-600 mb-6">{{ featuredArticle.excerpt }}</p>
-                
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center space-x-3">
-                    <NuxtImg 
-                      :src="featuredArticle.author.avatar" 
-                      :alt="featuredArticle.author.name"
-                      class="w-10 h-10 rounded-full object-cover"
-                    />
-                    <div>
-                      <p class="font-medium">{{ featuredArticle.author.name }}</p>
-                      <p class="text-sm text-gray-500">{{ featuredArticle.author.role }}</p>
-                    </div>
-                  </div>
-                  
-                  <NuxtLink 
-                    :to="`/blog/${featuredArticle.slug}`"
-                    class="bg-red-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors"
-                  >
-                    Read More
-                  </NuxtLink>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <BlogFeaturedArticleSection
+      :article="featuredArticle"
+      :categories="categories"
+    />
 
     <!-- Articles Grid -->
-    <section class="py-16 bg-gray-50">
-      <div class="container mx-auto px-4">
-        <div class="max-w-6xl mx-auto">
-          <div class="flex items-center justify-between mb-8">
-            <h2 class="text-2xl font-bold">Latest Articles</h2>
-            <p class="text-gray-600">{{ filteredArticles.length }} articles found</p>
-          </div>
-
-          <!-- Articles Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            <article 
-              v-for="article in paginatedArticles" 
-              :key="article.id"
-              class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group"
-            >
-              <div class="relative">
-                <NuxtImg 
-                  :src="article.image" 
-                  :alt="article.title"
-                  class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div class="absolute top-4 left-4">
-                  <span class="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {{ getCategoryName(article.category) }}
-                  </span>
-                </div>
-              </div>
-              
-              <div class="p-6">
-                <div class="flex items-center space-x-2 mb-3">
-                  <Calendar class="h-4 w-4 text-gray-400" />
-                  <span class="text-gray-500 text-sm">{{ formatDate(article.publishedAt) }}</span>
-                  <Clock class="h-4 w-4 text-gray-400 ml-2" />
-                  <span class="text-gray-500 text-sm">{{ article.readTime }} min read</span>
-                </div>
-                
-                <h3 class="text-xl font-bold mb-3 group-hover:text-red-600 transition-colors">
-                  {{ article.title }}
-                </h3>
-                <p class="text-gray-600 mb-4 line-clamp-3">{{ article.excerpt }}</p>
-                
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center space-x-2">
-                    <NuxtImg 
-                      :src="article.author.avatar" 
-                      :alt="article.author.name"
-                      class="w-8 h-8 rounded-full object-cover"
-                    />
-                    <span class="text-sm font-medium">{{ article.author.name }}</span>
-                  </div>
-                  
-                  <NuxtLink 
-                    :to="`/blog/${article.slug}`"
-                    class="text-red-600 font-medium hover:text-red-700 transition-colors flex items-center space-x-1"
-                  >
-                    <span>Read More</span>
-                    <ArrowRight class="h-4 w-4" />
-                  </NuxtLink>
-                </div>
-              </div>
-            </article>
-          </div>
-
-          <!-- Load More Button -->
-          <div class="text-center" v-if="hasMoreArticles">
-            <button 
-              @click="loadMoreArticles"
-              class="bg-red-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors"
-            >
-              Load More Articles
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
+    <BlogArticlesGridSection
+      :articles="paginatedArticles"
+      :categories="categories"
+      :articles-count="filteredArticles.length"
+      :has-more-articles="hasMoreArticles"
+      :is-loading="isLoadingMore"
+      @load-more="loadMoreArticles"
+    />
 
     <!-- Newsletter Signup -->
-    <section class="py-16 bg-slate-800 text-white">
-      <div class="container mx-auto px-4">
-        <div class="max-w-4xl mx-auto text-center">
-          <h2 class="text-3xl font-bold mb-4">Stay Updated</h2>
-          <p class="text-xl text-gray-300 mb-8">
-            Subscribe to our newsletter for the latest automotive tips, news, and exclusive offers.
-          </p>
-          
-          <form @submit.prevent="subscribeNewsletter" class="max-w-md mx-auto">
-            <div class="flex gap-4">
-              <input 
-                v-model="newsletterEmail"
-                type="email" 
-                placeholder="Enter your email"
-                required
-                class="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:ring-2 focus:ring-red-500 focus:outline-none"
-              />
-              <button 
-                type="submit"
-                :disabled="isSubscribing"
-                class="bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
-              >
-                {{ isSubscribing ? 'Subscribing...' : 'Subscribe' }}
-              </button>
-            </div>
-          </form>
-          
-          <p class="text-sm text-gray-400 mt-4">
-            No spam, unsubscribe at any time. We respect your privacy.
-          </p>
-        </div>
-      </div>
-    </section>
+    <BlogNewsletterSection
+      @subscribe="subscribeNewsletter"
+      @success="handleNewsletterSuccess"
+      @error="handleNewsletterError"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-// import { watch } from 'fs'
-import { Search, Calendar, Clock, ArrowRight } from 'lucide-vue-next'
 import { useHead } from 'nuxt/app'
-// import { ref } from 'process'
 import { computed, ref, watch } from 'vue'
+
+// Import components
+import BlogHeroSection from '~/components/Blog/BlogHeroSection.vue'
+import BlogSearchFilterSection from '~/components/Blog/BlogSearchFilterSection.vue'
+import BlogFeaturedArticleSection from '~/components/Blog/BlogFeaturedArticleSection.vue'
+import BlogArticlesGridSection from '~/components/Blog/BlogArticlesGridSection.vue'
+import BlogNewsletterSection from '~/components/Blog/BlogNewsletterSection.vue'
 
 // SEO
 useHead({
@@ -249,8 +67,7 @@ const searchQuery = ref('')
 const selectedCategory = ref('all')
 const currentPage = ref(1)
 const articlesPerPage = 6
-const newsletterEmail = ref('')
-const isSubscribing = ref(false)
+const isLoadingMore = ref(false)
 
 // Categories
 const categories = ref([
@@ -262,6 +79,7 @@ const categories = ref([
   { id: 'seasonal', name: 'Seasonal Care' }
 ])
 
+// Sample articles data (same as before)
 // Sample articles data
 const articles = ref([
   {
@@ -370,21 +188,21 @@ const articles = ref([
 
 // Computed properties
 const featuredArticle = computed(() => {
-  return articles.value.find((article: { featured: any }) => article.featured)
+  return articles.value.find(article => article.featured)
 })
 
 const filteredArticles = computed(() => {
-  let filtered = articles.value.filter((article: { featured: any }) => !article.featured)
+  let filtered = articles.value.filter(article => !article.featured)
   
   // Filter by category
   if (selectedCategory.value !== 'all') {
-    filtered = filtered.filter((article: { category: any }) => article.category === selectedCategory.value)
+    filtered = filtered.filter(article => article.category === selectedCategory.value)
   }
   
   // Filter by search query
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter((article: { title: string; excerpt: string }) => 
+    filtered = filtered.filter(article => 
       article.title.toLowerCase().includes(query) ||
       article.excerpt.toLowerCase().includes(query)
     )
@@ -404,50 +222,40 @@ const hasMoreArticles = computed(() => {
 })
 
 // Methods
-const getCategoryName = (categoryId: string) => {
-  const category = categories.value.find((cat: { id: string }) => cat.id === categoryId)
-  return category ? category.name : 'Article'
+const handleCategoryChange = (categoryId: string) => {
+  selectedCategory.value = categoryId
 }
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  })
-}
-
-const loadMoreArticles = () => {
-  currentPage.value++
-}
-
-const subscribeNewsletter = async () => {
-  isSubscribing.value = true
+const loadMoreArticles = async () => {
+  isLoadingMore.value = true
   
+  // Simulate API call
+  await new Promise(resolve => setTimeout(resolve, 1000))
+  
+  currentPage.value++
+  isLoadingMore.value = false
+}
+
+const subscribeNewsletter = async (email: string) => {
   try {
-    // Send email to newsletter API
     const response = await $fetch('/api/newsletter', {
       method: 'POST',
-      body: { email: newsletterEmail.value }
+      body: { email }
     })
     
-    if ((response as { success: boolean }).success) {
-      // Reset form
-      newsletterEmail.value = ''
-      
-      // Show success message (you could add a toast notification here)
-      alert((response as { message?: string }).message || 'Successfully subscribed to our newsletter!')
-    }
+    console.log('Newsletter subscription successful:', response)
   } catch (error: any) {
     console.error('Newsletter subscription error:', error)
-    
-    // Show specific error message if available
-    const errorMessage = error.data?.statusMessage || 'Error subscribing to newsletter. Please try again.'
-    alert(errorMessage)
-  } finally {
-    isSubscribing.value = false
+    throw error
   }
+}
+
+const handleNewsletterSuccess = () => {
+  console.log('Newsletter subscription successful')
+}
+
+const handleNewsletterError = (error: any) => {
+  console.error('Newsletter subscription failed:', error)
 }
 
 // Watch for category/search changes to reset pagination
@@ -455,12 +263,3 @@ watch([selectedCategory, searchQuery], () => {
   currentPage.value = 1
 })
 </script>
-
-<style scoped>
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-</style>
