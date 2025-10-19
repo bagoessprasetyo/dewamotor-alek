@@ -8,129 +8,36 @@
     </Head>
 
     <!-- Hero Section -->
-    <section class="bg-gradient-to-r from-red-600 to-red-700 text-white py-16">
-      <div class="container mx-auto px-4">
-        <div class="text-center">
-          <h1 class="text-4xl md:text-5xl font-bold mb-4">Our Completed Projects</h1>
-          <p class="text-xl mb-8 max-w-2xl mx-auto">
-            See the quality of our work through our portfolio of completed automotive projects. 
-            From engine rebuilds to brake replacements, we deliver excellence every time.
-          </p>
-        </div>
-      </div>
-    </section>
+    <ProjectsHeroSection />
 
     <!-- Filter Section -->
-    <section class="py-8 bg-gray-50">
-      <div class="container mx-auto px-4">
-        <div class="flex flex-wrap justify-center gap-4">
-          <button 
-            v-for="filter in filters" 
-            :key="filter.value"
-            @click="activeFilter = filter.value"
-            :class="[
-              'px-6 py-2 rounded-full font-medium transition-all duration-300',
-              activeFilter === filter.value 
-                ? 'bg-red-600 text-white shadow-lg' 
-                : 'bg-white text-gray-700 hover:bg-red-50 hover:text-red-600'
-            ]"
-          >
-            {{ filter.label }}
-          </button>
-        </div>
-      </div>
-    </section>
+    <ProjectsFilterSection 
+      :active-filter="activeFilter"
+      @filter-change="handleFilterChange"
+    />
 
     <!-- Projects Grid -->
-    <section class="py-16">
-      <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div 
-            v-for="project in filteredProjects" 
-            :key="project.id"
-            class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
-          >
-            <!-- Project Image -->
-            <div class="relative h-64 overflow-hidden">
-              <NuxtImg 
-                :src="project.image" 
-                :alt="project.title"
-                class="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                loading="lazy"
-              />
-              <div class="absolute top-4 left-4">
-                <span class="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                  {{ project.category }}
-                </span>
-              </div>
-            </div>
-
-            <!-- Project Content -->
-            <div class="p-6">
-              <h3 class="text-xl font-bold text-gray-900 mb-2">{{ project.title }}</h3>
-              <p class="text-gray-600 mb-4">{{ project.description }}</p>
-              
-              <!-- Project Details -->
-              <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
-                <span>{{ project.vehicle }}</span>
-                <span>{{ project.completionDate }}</span>
-              </div>
-
-              <!-- View Details Button -->
-              <NuxtLink 
-                :to="`/projects/${project.slug}`"
-                class="inline-flex items-center text-red-600 hover:text-red-700 font-medium transition-colors duration-200"
-              >
-                View Details
-                <ChevronRight class="ml-1 h-4 w-4" />
-              </NuxtLink>
-            </div>
-          </div>
-        </div>
-
-        <!-- Load More Button -->
-        <div class="text-center mt-12" v-if="hasMoreProjects">
-          <button 
-            @click="loadMoreProjects"
-            class="bg-red-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors duration-200"
-          >
-            Load More Projects
-          </button>
-        </div>
-      </div>
-    </section>
+    <ProjectsGridSection 
+      :projects="filteredProjects"
+      :has-more-projects="hasMoreProjects"
+      :is-loading="isLoadingMore"
+      @load-more="loadMoreProjects"
+    />
 
     <!-- CTA Section -->
-    <section class="bg-slate-800 text-white py-16">
-      <div class="container mx-auto px-4 text-center">
-        <h2 class="text-3xl font-bold mb-4">Ready to Start Your Project?</h2>
-        <p class="text-xl mb-8 max-w-2xl mx-auto">
-          Join our satisfied customers and experience the quality workmanship that sets us apart.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <NuxtLink 
-            to="/contact"
-            class="bg-red-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors duration-200"
-          >
-            Get Free Quote
-          </NuxtLink>
-          <a 
-            href="tel:+1234567890"
-            class="border border-white text-white px-8 py-3 rounded-lg font-medium hover:bg-white hover:text-slate-800 transition-colors duration-200"
-          >
-            Call Now: (123) 456-7890
-          </a>
-        </div>
-      </div>
-    </section>
+    <ProjectsCtaSection />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ChevronRight } from 'lucide-vue-next'
 import { useHead } from 'nuxt/app'
-// import { ref } from 'process'
 import { computed, ref } from 'vue'
+
+// Import components
+import ProjectsHeroSection from '~/components/Projects/ProjectsHeroSection.vue'
+import ProjectsFilterSection from '~/components/Projects/ProjectsFilterSection.vue'
+import ProjectsGridSection from '~/components/Projects/ProjectsGridSection.vue'
+import ProjectsCtaSection from '~/components/Projects/ProjectsCtaSection.vue'
 
 // SEO and Meta
 useHead({
@@ -143,16 +50,7 @@ useHead({
 // Reactive data
 const activeFilter = ref('all')
 const hasMoreProjects = ref(true)
-
-// Filter options
-const filters = [
-  { label: 'All Projects', value: 'all' },
-  { label: 'Engine Repair', value: 'engine' },
-  { label: 'Brake Service', value: 'brake' },
-  { label: 'Transmission', value: 'transmission' },
-  { label: 'Electrical', value: 'electrical' },
-  { label: 'Body Work', value: 'body' }
-]
+const isLoadingMore = ref(false)
 
 // Sample projects data
 const projects = ref([
@@ -229,12 +127,23 @@ const filteredProjects = computed(() => {
   if (activeFilter.value === 'all') {
     return projects.value
   }
-  return projects.value.filter((project: { filterCategory: any }) => project.filterCategory === activeFilter.value)
+  return projects.value.filter(project => project.filterCategory === activeFilter.value)
 })
 
+// Handle filter change
+const handleFilterChange = (value: string) => {
+  activeFilter.value = value
+}
+
 // Load more projects function
-const loadMoreProjects = () => {
-  // Simulate loading more projects
+const loadMoreProjects = async () => {
+  isLoadingMore.value = true
+  
+  // Simulate API call
+  await new Promise(resolve => setTimeout(resolve, 1000))
+  
+  // Simulate loading more projects (you would fetch from API here)
   hasMoreProjects.value = false
+  isLoadingMore.value = false
 }
 </script>
